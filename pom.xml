@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xjp.jib</groupId>
+    <artifactId>jib_demo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.4.RELEASE</version>
+    </parent>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- jdk version -->
+        <java.version>1.8</java.version>
+        <!-- jdk version -->
+        <java.source.version>1.8</java.source.version>
+        <java.target.version>1.8</java.target.version>
+        <!-- 要想本地可以上传到阿里云，请使用公网地址 registry.cn-shenzhen.aliyuncs.com -->
+        <docker.repostory>registry.cn-hangzhou.aliyuncs.com/xujunping/xjp</docker.repostory>
+        <docker.repostory.namespace>syp-app</docker.repostory.namespace>
+        <docker.project.version>1.0</docker.project.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-models</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-models</artifactId>
+            <version>1.5.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+
+
+    <build>
+            <plugins>
+                <!-- spring-boot-maven-plugin -->
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>1.7.0</version>
+                    <configuration>
+                        <!-- 拉取所需的基础镜像 - 这里用于运行springboot项目 -->
+                        <from>
+                            <image>openjdk:8u212-jdk-stretch</image>
+                            <auth>
+                                <username>15017941039</username>
+                                <password>xjp970102</password>
+                            </auth>
+                        </from>
+                        <!-- 最后生成的镜像配置 -->
+                        <to>
+                            <!-- push到阿里云镜像仓库，如果是其它镜像仓库，将下面地址替换掉即可，ex: `Docker Hub` 的 `docker.io/zhengqing/xxx` -->
+                            <image>
+                                ${docker.repostory}/${docker.repostory.namespace}/${project.artifactId}
+                            </image>
+                            <tags>
+                                <tag>${docker.project.version}</tag>
+                                <tag>latest</tag>
+                            </tags>
+                            <!-- 阿里云的用户名和密码也可以配置在 maven settings.xml文件中（推荐） -->
+                            <auth>
+                                <username>15017941039</username>
+                                <password>xjp970102</password>
+                            </auth>
+                        </to>
+                        <container>
+                            <jvmFlags>
+                                <jvmFlag>-Xms512m</jvmFlag>
+                                <jvmFlag>-Xmn256m</jvmFlag>
+                            </jvmFlags>
+                            <environment>
+                                <TZ>Asia/Shanghai</TZ>
+                            </environment>
+                            <useCurrentTimestamp>true</useCurrentTimestamp>
+                        </container>
+                        <allowInsecureRegistries>true</allowInsecureRegistries>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+    </build>
+
+
+</project>
